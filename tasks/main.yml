@@ -76,7 +76,7 @@
       become: true
   when: ansible_distribution == 'Boot2Docker'
 
-- name: Create {{ postgres_user }} user
+- name: "Create {{ postgres_user }} user"
   postgresql_user: >
     name={{ postgres_user }}
     password={{ postgres_password }}
@@ -89,7 +89,7 @@
 
   when: postgres_user is defined and postgres_password is defined
 
-- name: Create {{ postgres_database }} database
+- name: "Create {{ postgres_database }} database"
   postgresql_db: >
     name={{ postgres_database }}
     owner={{ postgres_user }}
