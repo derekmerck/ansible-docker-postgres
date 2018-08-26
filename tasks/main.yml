@@ -22,6 +22,10 @@
     ports:
       - '{{ postgres_port }}:5432'
     networks: '{{ postgres_networks }}'
+
+    log_driver:   "{{ postgres_logger }}"
+    log_options:  "{{ postgres_log_opts }}"
+
   register: postgres_container
 
 - name: Wait until PostgreSQL starts up
@@ -55,6 +59,7 @@
     role_attr_flags=CREATEDB,SUPERUSER,LOGIN
     login_host=localhost
     port={{ postgres_port }}
+    encrypted=yes
   when: postgres_user is defined and postgres_password is defined
 
 - name: Create {{ postgres_database }} database
