@@ -3,13 +3,17 @@
 logger:   "json-file"
 data_dir: "/data"
 
-postgres_docker_image:     postgres
-postgres_docker_image_tag: 10
-postgres_container_name:   'postgres'
-postgres_port:             5432
+postgres_docker_image:       postgres
+postgres_docker_image_tag:   10
+postgres_container_name:     'postgres'
+postgres_port:               5432
+
+postgres_use_data_container: True
+postgres_data_dir:           "{{ data_dir }}/{{ postgres_container_name }}/data"
 
 postgres_logger:              "{{ logger }}"
-postgres_log_opts:            "{{ {'splunk_name': postgres_container_name } if postgres_logger=='splunk' else {} }}"
+postgres_log_opts:            "{{ {'splunk_name': postgres_container_name }
+                                  if postgres_logger=='splunk' else {} }}"
 
 postgres_networks: null
 container_memory_limit: null

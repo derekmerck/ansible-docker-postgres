@@ -1,14 +1,33 @@
 ---
+
+#############################
+# Create required data container and directories
+#############################
+
+- name: Create data container
+  docker_container:
+    name: '{{ postgres_container_name + "-data" }}'
+    image: busybox
+    state: present
+    volumes:
+      - '/var/lib/postgresql/data'
+  when: postgres_use_data_container
+
+- name:    "Setup postgres data folder"
+  file:
+    path:  "{{ postgres_data_dir }}"
+    state: directory
+  when: not postgres_use_data_container
+
+
+#############################
+# Create required data container and directories
+#############################
+
 - name: Pull PostgreSQL image
   docker_image:
     name: '{{ postgres_docker_image }}'
     tag: '{{ postgres_docker_image_tag }}'
-
-- name: Create data container
-  docker_container:
-    name: '{{ postgres_container_name }}-data'
-    image: '{{ postgres_docker_image }}:{{ postgres_docker_image_tag }}'
-    state: present
 
 - name: Run PostgreSQL container
   docker_container:
@@ -17,8 +36,12 @@
     restart_policy: always
     state: started
     memory: '{{ container_memory_limit | default(omit) }}'
-    volumes_from:
-      - '{{ postgres_container_name }}-data'
+
+    volumes_from: '{{ [postgres_container_name + "-data"] if postgres_use_data_container else [] }}'
+    volumes:      '{{ [postgres_data_dir + ":/var/lib/postgresql/data:z"]
+                      if not postgres_use_data_container
+                      else [] }}'
+
     ports:
       - '{{ postgres_port }}:5432'
     networks: '{{ postgres_networks }}'
@@ -32,6 +55,7 @@
   wait_for: port={{ postgres_port }} delay=5
   when: postgres_container.changed
 
+# TODO: can use package here
 # install pg tools when on debian-based systems
 - name: Ensure db client packages are installed (Debian/Ubuntu)
   apt: name={{item}} state=present
@@ -60,6 +84,9 @@
     login_host=localhost
     port={{ postgres_port }}
     encrypted=yes
+    # Must use encrypted passwords in PG10
+    # See https://github.com/ansible/ansible/issues/25823
+
   when: postgres_user is defined and postgres_password is defined
 
 - name: Create {{ postgres_database }} database
