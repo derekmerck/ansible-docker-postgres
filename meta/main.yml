@@ -1,7 +1,7 @@
 galaxy_info:
-  author: Sergiy Kukunin (Derek Merck)
+  author: Derek Merck (Forked from Sergiy Kukunin)
   description: Manage and run the PostgreSQL docker container.
-  company: matic-insurance
+  company: Forked from matic-insurance
 
   role_name: postgres-docker
 

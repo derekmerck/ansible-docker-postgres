@@ -38,7 +38,7 @@
     memory: '{{ container_memory_limit | default(omit) }}'
 
     volumes_from: '{{ [postgres_container_name + "-data"] if postgres_use_data_container else [] }}'
-    volumes:      '{{ [postgres_data_dir + ":/var/lib/postgresql/data:z"]
+    volumes:      '{{ [postgres_data_dir + ":/var/lib/postgresql/data"]
                       if not postgres_use_data_container
                       else [] }}'
 
@@ -84,10 +84,10 @@
     login_host=localhost
     port={{ postgres_port }}
     encrypted=yes
-    # Must use encrypted passwords in PG10
-    # See https://github.com/ansible/ansible/issues/25823
-
   when: postgres_user is defined and postgres_password is defined
+  become: yes
+  # Must use encrypted passwords in PG10
+  # See https://github.com/ansible/ansible/issues/25823
 
 - name: "Create {{ postgres_database }} database"
   postgresql_db: >
