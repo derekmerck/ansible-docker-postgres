@@ -1,19 +1,29 @@
 ---
 
-logger:   "json-file"
-data_dir: "/data"
+# Global defaults
+# -----------------------------
+# service_password:          "passw0rd!"
+data_dir:                  "/data"
+# config_dir:                "/config"
+logger:                    "json-file"
+log_opts:                  {}
 
+# Docker image configuration
+# -----------------------------
 postgres_docker_image:       postgres
 postgres_docker_image_tag:   10
+
+# Docker container configuration
+# -----------------------------
 postgres_container_name:     'postgres'
 postgres_port:               5432
 
 postgres_use_data_container: True
 postgres_data_dir:           "{{ data_dir }}/{{ postgres_container_name }}/data"
 
-postgres_logger:              "{{ logger }}"
-postgres_log_opts:            "{{ {'splunk-source': postgres_container_name }
-                                  if postgres_logger=='splunk' else {} }}"
+postgres_logger:             "{{ logger }}"
+postgres_log_opts:           '{{ log_opts | combine( {"splunk-source": postgres_container_name} ) if logger=="splunk" else log_opts }}'
+
 postgres_networks: null
 container_memory_limit: null
 
