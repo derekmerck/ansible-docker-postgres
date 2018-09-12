@@ -1,0 +1,13 @@
+---
+
+# Must use encrypted passwords in PG10
+# See https://github.com/ansible/ansible/issues/25823
+
+- name: "Create {{ postgres_user }} user"
+  postgresql_user: >
+    name={{ postgres_user }}
+    password={{ postgres_password }}
+    role_attr_flags=CREATEDB,SUPERUSER,LOGIN
+    login_host=localhost
+    port={{ postgres_port }}
+    encrypted=yes
