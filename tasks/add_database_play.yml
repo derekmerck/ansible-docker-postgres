@@ -3,6 +3,7 @@
 - name: "Create {{ postgres_database }} database"
   postgresql_db: >
     name={{ postgres_database }}
+    password={{ postgres_password }}
     owner={{ postgres_user }}
     login_host=localhost
     port={{ postgres_port }}
